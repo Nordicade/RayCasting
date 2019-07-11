@@ -58,21 +58,19 @@ def square_obstacle(obs_x, obs_y, obs_width, obs_height, _obstacleImg):
     obstacleImgScaled = pygame.transform.scale(_obstacleImg, (obs_width, obs_height))
     screen.blit(obstacleImgScaled,(obs_x, obs_y))
 
-# method to determine how many degrees to rotate player image
-def findRotationDegrees(mouse_X, mouse_Y, center_X, center_Y):
-    radians = math.atan2(mouse_Y - center_Y, mouse_X - center_X)
+def find_rotation_degrees(mouse_X, mouse_Y, center_X, center_Y, radians):
     degree = (radians * (180 / 3.1415) * -1) + 90
     return degree
 
 # method to determine how many radians to rotate player image
-def findRotationRadians(mouse_X, mouse_Y, center_X, center_Y):
+def find_rotation_radians(mouse_X, mouse_Y, center_X, center_Y):
     radians = math.atan2(mouse_Y - center_Y, mouse_X - center_X)
     return radians
 
 
 # method to determine all points that make a circle in a 2d space.
 # paramters are (x coord, y coord, radius, radiansRotated). returns array of points
-def findCircle(x, y, radius, radiansRotated):
+def find_cicle(x, y, radius, radiansRotated):
     radiansRotated = -radiansRotated + math.pi/2
     #rangeArr = [radiansRotated + math.pi/2 , radiansRotated, radiansRotated + (math.pi), radiansRotated -math.pi/2]
     rangeArr = [radiansRotated + math.pi/4, radiansRotated + math.pi/6,
@@ -90,7 +88,7 @@ def findCircle(x, y, radius, radiansRotated):
 
 
 # method to draw the line of sight (change to include vision cone as well)
-def drawLOS(mouse_X, mouse_Y, center_X, center_Y):
+def draw_line_of_sight(mouse_X, mouse_Y, center_X, center_Y):
     global prevMouseX
     global prevMouseY
     global prevCenterX
@@ -125,20 +123,20 @@ def drawLOS(mouse_X, mouse_Y, center_X, center_Y):
         else:
             slope = 20
         # to here. instead of multiplying slope and index, increment yCoord
-        # until checkObstacleCollision/checkScreenCollision finds an edge
+        # until check_obstacle_collision/check_screen_collision finds an edge
 
     slope = (center_Y - mouse_Y) / (center_X - mouse_X)
 
     if mouse_X > center_X:
         while noCollisionFound:
             yCoord = (slope * index) + center_Y
-            if checkObstacleCollision(index + center_X, yCoord):
+            if check_obstacle_collision(index + center_X, yCoord):
                 pygame.draw.line(screen, black, (center_X, center_Y), (index + center_X, yCoord), lineThickness)
                 #pygame.draw.line(screen, black, (center_X, center_Y), (x , y), 1)
                 prevLOSX = index + center_X
                 prevLOSY = yCoord
                 noCollisionFound = False
-            elif checkScreenCollision(index + center_X, yCoord):
+            elif check_screen_collision(index + center_X, yCoord):
                 pygame.draw.line(screen, black, (center_X, center_Y), (index + center_X, yCoord), lineThickness)
                 prevLOSX = index + center_X
                 prevLOSY = yCoord
@@ -149,12 +147,12 @@ def drawLOS(mouse_X, mouse_Y, center_X, center_Y):
     else:
         while noCollisionFound:
             yCoord = (-slope * index) + center_Y
-            if checkObstacleCollision(center_X - index, yCoord):
+            if check_obstacle_collision(center_X - index, yCoord):
                 pygame.draw.line(screen, black, (center_X, center_Y), (center_X - index, yCoord), lineThickness)
                 prevLOSX = center_X - index
                 prevLOSY = yCoord
                 noCollisionFound = False
-            elif checkScreenCollision(center_X - index, yCoord):
+            elif check_screen_collision(center_X - index, yCoord):
                 pygame.draw.line(screen, black, (center_X, center_Y), (center_X -index, yCoord), lineThickness)
                 prevLOSX = center_X - index
                 prevLOSY = yCoord
@@ -168,7 +166,7 @@ def drawLOS(mouse_X, mouse_Y, center_X, center_Y):
     #pygame.draw.line(screen, black, (center_X,center_Y), (playerImgRect.x, playerImgRect.y), 3)
 
 #given a point, returns true if it is meets obstacle dimensions
-def checkObstacleCollision(los_X, los_Y):
+def check_obstacle_collision(los_X, los_Y):
     for box in obstacleList:
         if(los_X >= box.x and los_X <= box.x + box.width):
             if(los_Y >= box.y and los_Y <= box.y + box.height):
@@ -177,7 +175,7 @@ def checkObstacleCollision(los_X, los_Y):
         return False
 
 #given a point, returns true if the point has exited the screen dimensions
-def checkScreenCollision(los_X, los_Y):
+def check_screen_collision(los_X, los_Y):
     if(los_X <= 0 or los_X >= displayWidth):
         return True
     if(los_Y <= 0 or los_Y >= displayHeight):
@@ -187,11 +185,11 @@ def checkScreenCollision(los_X, los_Y):
 
 #given a point (center of playerImg) and (int) d degree in radians, will create a circle around it and return a point along the
 #circumference of the circle (45 degrees + d)
-def drawConeLos(center_X, center_Y, circlePointList):
+def draw_cone_line_of_sight(center_X, center_Y, circlePointList):
     for circleCoordPair in circlePointList:
         x = circleCoordPair[1]
         y = circleCoordPair[0]
-        drawLOS(x, y, center_X, center_Y)
+        draw_line_of_sight(x, y, center_X, center_Y)
         #pygame.draw.line(screen, black, (center_X, center_Y), (x, y), 1)
 
 # check and handle events while game is running
@@ -245,7 +243,7 @@ def game_loop():
 
     # final adjustments
         screen.fill(background_color)
-        square_obstacle(displayWidth//3,displayHeight//3,displayWidth//3, displayHeight//3, obstacleImg)
+        square_obstacle(displayWidth // 3,  displayHeight // 3, displayWidth//3 , displayHeight //3, obstacleImg)
         # rotate playerImg s.t. player faces mouse position
         mouseX = pygame.mouse.get_pos()[0]
         mouseY = pygame.mouse.get_pos()[1]
@@ -253,11 +251,11 @@ def game_loop():
         centerX = x + (playerImg.get_width()/2)
         centerY = y + (playerImg.get_height()/2)
 
-        degrees = findRotationDegrees(mouseX, mouseY, centerX, centerY)
-        radians = findRotationRadians(mouseX, mouseY, centerX, centerY)
-        drawLOS(mouseX, mouseY, centerX, centerY)
-        circleArr = findCircle(centerX, centerY, 100, radians)
-        drawConeLos(centerX, centerY, circleArr)
+        radians = find_rotation_radians(mouseX, mouseY, centerX, centerY)
+        degrees = find_rotation_degrees(mouseX, mouseY, centerX, centerY, radians)
+        draw_line_of_sight(mouseX, mouseY, centerX, centerY)
+        circleArr = find_cicle(centerX, centerY, 100, radians)
+        draw_cone_line_of_sight(centerX, centerY, circleArr)
         playerImgRotated = pygame.transform.rotate(playerImg, degrees)
         screen.blit(playerImgRotated,(x,y))
 
