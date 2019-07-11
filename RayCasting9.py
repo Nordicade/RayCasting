@@ -41,24 +41,36 @@ class Rectangle:
         self.y = _y
         self.width = _width
         self.height = _height
+    def __eq__(self, other):
+        if isinstance(other, Rectangle):
+            if(self.x == other.x and self.y == other.y and self.height == other.height and self.width == other.width):
+                return True
+            else:
+                return False
 
 # build obstruction
 def square_obstacle(obs_x, obs_y, obs_width, obs_height, _obstacleImg):
-    #pygame.draw.rect(screen, (245,0,0), (obs_x - 1, obs_y - 1, obs_width + 2, obs_height + 2,))
-    #pygame.draw.rect(screen, (245,245,220), (obs_x, obs_y, obs_width, obs_height))
     current = Rectangle(obs_x, obs_y, obs_width, obs_height)
 
+    if(len(obstacleList) == 0):
+        obstacleList.append(current)
+        #obstacleImgScaled = pygame.transform.scale(_obstacleImg, (obs_width, obs_height))
+        #screen.blit(obstacleImgScaled,(obs_x, obs_y))
     # check for duplicate boxes
+    duplicate_found = False
     for box in obstacleList:
-        if(box.x != obs_x and box.y != obs_y and box.height != obs_height and box.width != obs_height):
-            obstacleList.append(current)
-        #obstacleList.append(current)
-        print(str(obs_x) +str(" ")+ str(obs_y)+str(" ")+ str(obs_width)+str(" ")+ str(obs_height))
+        #if(box.x == obs_x and box.y == obs_y and box.height == obs_height and box.width == obs_width):
+        if current.__eq__(box):
+            duplicate_found = True
+        else:
+            duplicate_found = False
 
-    #testing image instead of rectangles
-    obstacleImgScaled = pygame.transform.scale(_obstacleImg, (obs_width, obs_height))
-    screen.blit(obstacleImgScaled,(obs_x, obs_y))
-    print(len(obstacleList))
+    if duplicate_found == False:
+        obstacleList.append(current)
+        #obstacleImgScaled = pygame.transform.scale(_obstacleImg, (obs_width, obs_height))
+        #screen.blit(obstacleImgScaled,(obs_x, obs_y))
+        print(str(len(obstacleList)) + str(" ")+str(obs_x) +str(" ")+ str(obs_y)+str(" ")+ str(obs_width)+str(" ")+ str(obs_height))
+
 # reads from D:\Nicholas\Projects\Raycasting\RayCasting\Arena.txt to fill obstacle map and create map
 # the first line read holds coordinates representing the  desired window size
 # each line thereafter holds a square obstacle "x starting pos, y starting pos, width, height"
@@ -68,13 +80,12 @@ def scan_obstacle_file(file_path):
     if file.mode == 'r':
         file_line = file.readlines()
         read_window_size(file_line[0])
+
         for line in file_line[1:]:
-            print(line)
             # now to just seperate the x, y, width, height
             # and add each line in as a square obstacle parameter
             value = line.split(',')
             square_obstacle(int(value[0]), int(value[1]), int(value[2]), int(value[3]), obstacleImg)
-
 
 # splits the string by the , dividing screenWidth and screenHeight and then sets the values
 def read_window_size(first_line):
@@ -272,7 +283,9 @@ def game_loop():
 
     # final adjustments
         screen.fill(background_color)
-        #scan_obstacle_file("D:\\Nicholas\\Projects\\Raycasting\\RayCasting\\Arena.txt")
+        for box in obstacleList:
+            obstacleImgScaled = pygame.transform.scale(obstacleImg, (box.width, box.height))
+            screen.blit(obstacleImgScaled,(box.x, box.y))
 
         # rotate playerImg s.t. player faces mouse position
         mouseX = pygame.mouse.get_pos()[0]
