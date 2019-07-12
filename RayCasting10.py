@@ -24,9 +24,9 @@ background_color = (255,255,255)
 black = pygame.Color(0,0,0)
 
 # build player object   \Users\Nicho\.atom\My files
-#playerImg = pygame.image.load('My files/PythonImages/ArmyPlayerTopViewFlipTrim.png')
-playerImg = pygame.image.load('My files/PythonImages/PeaShooterResizeOpen.png')
-obstacleImg = pygame.image.load('My files/PythonImages/Obstacle.png')
+playerImg = pygame.image.load('D:/Nicholas/Projects/Raycasting/RayCasting/PeaShooterResizeOpen.png')
+#playerImg = pygame.image.load('My files/PythonImages/PeaShooterResizeOpen.png')
+obstacleImg = pygame.image.load('D:/Nicholas/Projects/Raycasting/RayCasting/obstacle.png')
 #playerImg = pygame.transform.scale(playerImg, (75, 75))
 playerImg = pygame.transform.scale(playerImg, (31, 31))
 
@@ -238,7 +238,7 @@ def game_loop():
     x_change = 0
     y_change = 0
 
-    scan_obstacle_file("D:\\Nicholas\\Projects\\Raycasting\\RayCasting\\Arena1.txt")
+    scan_obstacle_file("D:\\Nicholas\\Projects\\Raycasting\\RayCasting\\Arena.txt")
 
     running = True
     while running:
